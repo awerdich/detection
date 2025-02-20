@@ -1,0 +1,34 @@
+services:
+  app:
+    image: perionv:latest
+    container_name: perionv
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    build: 
+      context: .
+      network: host
+      dockerfile: Dockerfile
+      args:
+        - DEV_periomodel=1
+    ipc: host
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - HOME=/app
+      - DATA_DIR=/app/data 
+    env_file:
+      - keys.env
+    ports:
+      - "8888:8888"
+      - "6006:6006"
+    volumes:
+      - .:/app
+      - /home/andreas/data:/app/data
+      
+#volumes:
+#  appdata:
+#    external: false
