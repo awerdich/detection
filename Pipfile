@@ -5,8 +5,20 @@ name = "pypi"
 
 [packages]
 detection = {file = ".", editable = true}
+transformers = {git = "https://github.com/huggingface/transformers"}
+albumentations = "*"
+roboflow = "*"
+supervision = "*"
+tqdm = "*"
+scikit-learn = "*"
+scikit-image = "*"
+datasets = "*"
 
 [dev-packages]
+jupyterlab = "*"
+ipywidgets = "*"
+matplotlib = "*"
+seaborn = "*"
 
 [requires]
 python_version = "3.12"
