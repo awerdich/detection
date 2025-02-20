@@ -1,8 +1,7 @@
-# FROM nvcr.io/nvidia/pytorch:24.10-py3 AS base
-# Python 3.12.3 with PyTorch 2.6.0
+# https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch
 FROM nvcr.io/nvidia/pytorch:25.01-py3 AS base
 
-ARG DEV_periomodel
+ARG DEV_detection
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -17,8 +16,9 @@ ENV \
     NO_COLOR=true \
     PIPENV_NOSPIN=true
 
-# Port for JupyterLab server
+# Jupyter Lab
 EXPOSE 8888
+# TensorBoard
 EXPOSE 6006
 
 RUN mkdir -p /app

@@ -1,7 +1,7 @@
 services:
   app:
-    image: perionv:latest
-    container_name: perionv
+    image: detection:latest
+    container_name: detection
     deploy:
       resources:
         reservations:
@@ -14,7 +14,7 @@ services:
       network: host
       dockerfile: Dockerfile
       args:
-        - DEV_periomodel=1
+        - DEV_detection=1
     ipc: host
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
