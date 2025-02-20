@@ -30,7 +30,7 @@ RUN pip install pipenv
 
 # We need the setup package information
 COPY setup.py ./
-COPY src/periomodel/__init__.py src/periomodel/__init__.py
+COPY src/detection/__init__.py src/detection/__init__.py
 
 # Additional dependencies 
 COPY Pipfile Pipfile.lock ./
