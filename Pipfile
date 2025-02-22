@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-detection = {file = ".", editable = true}
 transformers = {git = "https://github.com/huggingface/transformers"}
 albumentations = "*"
 roboflow = "*"
@@ -13,6 +12,7 @@ tqdm = "*"
 scikit-learn = "*"
 scikit-image = "*"
 datasets = "*"
+detection = {file = ".", editable = true}
 
 [dev-packages]
 jupyterlab = "*"
