@@ -53,6 +53,19 @@ def val_test_split(data, label_col=None, n_test_per_class=30, n_val_per_class=30
     dset_df.loc[dset_df['dataset'].isnull(), 'dataset'] = 'train'
     return dset_df
 
+def fdi_ada_mapping() -> dict:
+    """ Returns a dictionary mapping FDI to ADA numbers"""
+    fdi, ada = [], []
+    for q in range(1, 5):
+        for p in range(1, 9):
+            fdi.append(int(str(q) + str(p)))
+        if q in [1, 3]:
+            for a in range(8*q, 8*(q-1), -1):
+                ada.append(a)
+        else:
+            for a in range(8*(q-1), 8*q, 1):
+                ada.append(a + 1)
+    return dict(zip(fdi, ada))
 
 class DentexData:
     def __init__(self, data_dir):
