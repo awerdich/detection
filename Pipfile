@@ -16,8 +16,8 @@ detection = {file = ".", editable = true}
 
 [dev-packages]
 jupyterlab = "*"
-ipywidgets = "*"
 matplotlib = "*"
+ipywidgets = "*"
 seaborn = "*"
 
 [requires]
