@@ -48,7 +48,7 @@ def clipxyxy(xyxy, xlim, ylim, decimals=None):
     if decimals is not None:
         if decimals==0:
             # Convert the output bounding box coordinates into integer values
-            output = [int(np.floor(r)) for r in xyxy_clipped]
+            output = [np.int64(np.floor(r)) for r in xyxy_clipped]
         else:
             output = [round(r, ndigits=decimals) for r in xyxy_clipped]
     else:
