@@ -62,6 +62,21 @@ def clipxywh(xywh, xlim, ylim, decimals=None):
     xyxy_clipped = clipxyxy(xyxy=xyxy, xlim=xlim, ylim=ylim, decimals=decimals)
     return xyxy2xywh(xyxy_clipped)
 
+def yolo2xywh(yolobox: list, width: int, height: int) -> list:
+    """
+    Converts a YOLO format bounding box to standard XYWH format.
+    """
+    try:
+        assert isinstance(yolobox, (list, tuple, np.ndarray)) and len(yolobox)==4
+    except:
+        raise AssertionError('yolobox is a bounding box in yolo format!')
+    else:
+        x_rel, y_rel, w_rel, h_rel = yolobox
+        xywh = [(x_rel-(w_rel/2)) * width,
+                (y_rel-(h_rel/2)) * height,
+                w_rel * width, h_rel * height]
+    return xywh
+
 def crop_image(image, box):
     """
     Crops an object in an image by bounding box
@@ -118,13 +133,13 @@ def determine_bbox_format(bbox):
         str: 'xywh' if it's in COCO format, 'xyxy' if it's in Pascal VOC format, None if undetermined.
     """
     output = None
-    if isinstance(bbox, (list, tuple)) or len(bbox) != 4:
+    if isinstance(bbox, (list, tuple, np.ndarray)) and len(bbox) == 4:
         x1, y1, x2, y2 = bbox
-        if all(x>=0 for x in bbox) and all(isinstance(x, (int, float)) for x in bbox):
-            if (x2 > x1 and y2 > y1):
+        if all(x>=0 for x in bbox):
+            if x2 > x1 and y2 > y1:
                 # PASCAL: Here x2, y2 are max values, implying it represents bottom-right; x1, y1 as top-left
                 output = 'xyxy'
-            elif (x2 > 0 and y2 > 0):
+            elif x2 > 0 and y2 > 0:
                 # COCO: Here x2, y2 are width and height, but those should be larger than zero
                 output = 'xywh'
     return output

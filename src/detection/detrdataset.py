@@ -32,55 +32,6 @@ def get_gpu_info(device_str: str = None):
         logger.info(info_msg)
         return device, device_str
 
-@dataclass
-class AugTransform:
-    im_size: int = 640
-    def train(self):
-        """
-        Returns an image transformation pipeline for data augmentation during training.
-        Returns:
-            albumentations.core.composition.Compose: A composed transformation pipeline
-            configured for training data augmentation.
-        """
-        transform = alb.Compose(
-            [alb.Resize(self.im_size + 64, self.im_size + 64),
-             alb.RandomCrop(self.im_size, self.im_size),
-             alb.Affine(scale=(0.8, 1.2),
-                        rotate=1.0),
-             alb.Blur(),
-             alb.RandomGamma(),
-             alb.Sharpen(),
-             alb.CoarseDropout(num_holes_range=(1, 32),
-                               hole_height_range=(4, 32),
-                               hole_width_range=(4, 32)),
-             alb.CLAHE()],
-            bbox_params=alb.BboxParams(format='coco',
-                                       label_fields=['category'],
-                                       clip=True,
-                                       min_area=1))
-        return transform
-
-    def val(self):
-        """
-        Transforms image and bounding boxes for validation by resizing the image
-        to the predefined size and adjusting the bounding boxes accordingly.
-
-        The returned transformation applies the resizing operation while ensuring
-        that bounding boxes are clipped and filtered based on the minimum area.
-
-        Returns:
-            albumentations.core.composition.Compose: The transformation function
-            that processes images and bounding boxes for validation.
-        """
-        transform = alb.Compose(
-            [alb.Resize(self.im_size, self.im_size)],
-            bbox_params=alb.BboxParams(format='coco',
-                                       label_fields=['category'],
-                                       clip=True,
-                                       min_area=1))
-        return transform
-
-
 class DetectionDatasetFromDF(Dataset):
     def __init__(self,
                  data:pd.DataFrame,
@@ -142,18 +93,19 @@ class DetectionDatasetFromDF(Dataset):
         image = ImageData().load_image(file)
         # Histogram equalization improves contrast
         image = ImageData().hist_eq(image)
-        boxes = self.data.loc[self.data[self.file_col] == file, self.bbox_col].tolist()
-        categories = self.data.loc[self.data[self.file_col] == file, self.label_col].tolist()
+        bbox_list = self.data.loc[self.data[self.file_col] == file, self.bbox_col].tolist()
+        label_list = self.data.loc[self.data[self.file_col] == file, self.label_col].tolist()
         # Clip the bounding boxes to make sure that they are within the limits of the images
-        boxes = [clipxywh(xywh=list(bbox), xlim=(0, image.shape[1]), ylim=(0, image.shape[0]), decimals=0) for bbox in boxes]
+        bbox_list = [clipxywh(xywh=list(bbox), xlim=(0, image.shape[1]), ylim=(0, image.shape[0]), decimals=0) \
+                     for bbox in bbox_list]
         if self.transform:
-            transformed = self.transform(image=image, bboxes=boxes, category=categories)
+            transformed = self.transform(image=image, bboxes=bbox_list, labels=label_list)
             image = transformed['image']
-            boxes = transformed['bboxes']
-            categories = transformed['category']
+            bbox_list = transformed['bboxes']
+            label_list = transformed['labels']
         formatted_annotations = self.annotations_as_coco(image_id=idx,
-                                                         label_list=categories,
-                                                         bbox_list=boxes)
+                                                         label_list=label_list,
+                                                         bbox_list=bbox_list)
         # Run the model preprocessing on the input image and the bounding boxes
         output = self.processor(images=image, annotations=formatted_annotations,return_tensors='pt')
         # The processor returns output as a list with images, but we only return one image. Remove the list.
