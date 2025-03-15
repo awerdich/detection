@@ -1,7 +1,8 @@
 """
 Methods for image processing
 Andreas Werdich
-Center for Computational Biomedicine
+Core for Computational Biomedicine
+Harvard Medical School, Boston, MA, USA
 """
 
 import os
@@ -126,7 +127,8 @@ def validate_image_data(data_df, file_path_col):
 
 def determine_bbox_format(bbox):
     """
-    This is just a consistency check for the bounding boxes. May NOT be conclusive.
+    This is just a consistency check for the bounding boxes.
+    May not be conclusive.
     Parameters:
         bbox (list or tuple): Bounding box, list of four numbers.
     Returns:
