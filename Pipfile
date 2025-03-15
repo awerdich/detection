@@ -5,19 +5,19 @@ name = "pypi"
 
 [packages]
 transformers = {git = "https://github.com/huggingface/transformers"}
-albumentations = "*"
 roboflow = "*"
 supervision = "*"
 tqdm = "*"
-scikit-learn = "*"
-scikit-image = "*"
 datasets = "*"
 detection = {file = ".", editable = true}
+scikit-learn = "*"
+scikit-image = "*"
+albumentations = "*"
 
 [dev-packages]
 jupyterlab = "*"
-matplotlib = "*"
 ipywidgets = "*"
+matplotlib = "*"
 seaborn = "*"
 
 [requires]
