@@ -21,7 +21,7 @@ services:
       - HOME=/app
       - DATA_DIR=/app/data 
     env_file:
-      - keys.env
+      - .env
     ports:
       - "8888:8888"
       - "6006:6006"
