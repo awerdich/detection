@@ -9,10 +9,12 @@ roboflow = "*"
 supervision = "*"
 tqdm = "*"
 datasets = "*"
-detection = {file = ".", editable = true}
 scikit-learn = "*"
 scikit-image = "*"
 albumentations = "*"
+detection = {file = ".", editable = true}
+openai = "*"
+pydantic = "*"
 
 [dev-packages]
 jupyterlab = "*"
