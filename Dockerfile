@@ -1,5 +1,5 @@
 # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch
-FROM nvcr.io/nvidia/pytorch:25.01-py3 AS base
+FROM nvcr.io/nvidia/pytorch:25.02-py3 AS base
 
 ARG DEV_detection
 
