@@ -1,7 +1,5 @@
 # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch
-FROM nvcr.io/nvidia/pytorch:25.02-py3 AS base
-
-ARG DEV_detection
+FROM nvcr.io/nvidia/pytorch:25.03-py3 AS base
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -12,13 +10,18 @@ ENV \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
     PIP_SRC=/src \
-    PIPENV_HIDE_EMOJIS=true \
     NO_COLOR=true \
-    PIPENV_NOSPIN=true
+    UV_COMPILE_BYTECODE=1 \
+    UV_SYSTEM_PYTHON=true \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_PYTHON_PREFERENCE=only-system \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/usr/local
 
-# Jupyter Lab
+COPY --from=ghcr.io/astral-sh/uv:0.6.12 /uv /uvx /bin/
+
+# JupyterLab and TensorBoard
 EXPOSE 8888
-# TensorBoard
 EXPOSE 6006
 
 RUN mkdir -p /app
@@ -26,27 +29,22 @@ WORKDIR /app
 
 # Pip and pipenv
 RUN pip install --upgrade pip
-RUN pip install pipenv
 
-# We need the setup package information
-COPY setup.py ./
-COPY src/detection/__init__.py src/detection/__init__.py
+# Copy the project files to create the environment
+# COPY uv.lock pyproject.toml README.md .
+# COPY src/llmt/__init__.py src/llmt/__init__.py
 
-# Additional dependencies 
-COPY Pipfile Pipfile.lock ./
-RUN --mount=source=.git,target=.git,type=bind  \
-    pipenv install --system --deploy --ignore-pipfile --dev
+# Install the project's dependencies using the lockfile and settings
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     --mount=type=bind,source=.git,target=.git \
+#     --mount=type=bind,source=uv.lock,target=uv.lock \
+#     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+#      uv sync --frozen
 
-RUN python -m pip install -U \
-    "numpy<2.0" \
-    timm \
-    accelerate \
-    torchmetrics
-
-RUN python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"
+# RUN python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"
 
 # Run the jupyter lab server
 RUN mkdir -p /run_scripts
 COPY /bash_scripts/docker_entry /run_scripts
 RUN chmod +x /run_scripts/*
-CMD ["/bin/bash", "/run_scripts/docker_entry"]
+# CMD ["/bin/bash", "/run_scripts/docker_entry"]
