@@ -16,7 +16,7 @@ ENV \
     UV_PYTHON_DOWNLOADS=never \
     UV_PYTHON_PREFERENCE=only-system \
     UV_LINK_MODE=copy \
-    UV_PROJECT_ENVIRONMENT=/usr/local
+    UV_PROJECT_ENVIRONMENT=/usr
 
 COPY --from=ghcr.io/astral-sh/uv:0.6.12 /uv /uvx /bin/
 
@@ -31,20 +31,20 @@ WORKDIR /app
 RUN pip install --upgrade pip
 
 # Copy the project files to create the environment
-# COPY uv.lock pyproject.toml README.md .
-# COPY src/llmt/__init__.py src/llmt/__init__.py
+COPY uv.lock pyproject.toml README.md .
+COPY src/detection/__init__.py src/detection/__init__.py
 
-# Install the project's dependencies using the lockfile and settings
-# RUN --mount=type=cache,target=/root/.cache/uv \
-#     --mount=type=bind,source=.git,target=.git \
-#     --mount=type=bind,source=uv.lock,target=uv.lock \
-#     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-#      uv sync --frozen
+# Install depenencies that do not rely on the docker dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=.git,target=.git \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+     uv sync --frozen --inexact
 
-# RUN python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"
+RUN python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"
 
 # Run the jupyter lab server
 RUN mkdir -p /run_scripts
 COPY /bash_scripts/docker_entry /run_scripts
 RUN chmod +x /run_scripts/*
-# CMD ["/bin/bash", "/run_scripts/docker_entry"]
+CMD ["/bin/bash", "/run_scripts/docker_entry"]
