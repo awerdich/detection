@@ -13,8 +13,6 @@ services:
       context: .
       network: host
       dockerfile: Dockerfile
-      args:
-        - DEV_detection=1
     ipc: host
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
@@ -28,7 +26,3 @@ services:
     volumes:
       - .:/app
       - /home/andreas/data:/app/data
-      
-#volumes:
-#  appdata:
-#    external: false
