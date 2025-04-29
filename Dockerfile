@@ -39,7 +39,13 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=.git,target=.git \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-     uv sync --frozen --inexact
+    uv sync --frozen --inexact
+
+# Install dependencies that use the original docker environment
+RUN python -m pip install -U \
+    timm \
+    accelerate \
+    torchmetrics
 
 RUN python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"
 
