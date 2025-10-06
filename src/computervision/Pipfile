@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+pandas = "*"
+pyarrow = "*"
+scikit-learn = "*"
+scikit-image = "*"
+opencv-python = "*"
+tqdm = "*"
+transformers = {git = "https://github.com/huggingface/transformers"}
+computervision = {file = ".", editable = true}
+
+[dev-packages]
+jupyterlab = "*"
+ipywidgets = "*"
+matplotlib = "*"
+
+[requires]
+python_version = "3.12"
+python_full_version = "3.12.3"
